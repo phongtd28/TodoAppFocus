@@ -1,0 +1,84 @@
+.gr-capcha-code {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.gr-capcha-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.capcha-display {
+    display: flex;
+    border: 2px solid #c65912;
+    width: 200px;
+    height: 40px;
+    overflow: hidden;
+}
+.capcha-display span {
+    background: #c65912;
+    color: white;
+    max-width: 90px;
+    width: 100%;
+    padding-left: 5px;
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+#captcha {
+    flex-shrink: 0;
+    width: 100px;
+    padding-left: 6px;
+}
+.capcha-change-function {
+    font-size: larger;
+    font-weight: bold;
+    background-color: #c65912;
+    color: white;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    transition: 0.2s linear;
+}
+.capcha-change-function:hover {
+    background-color: hsl(24, 90%, 51%);
+}
+.gr-function {
+    display: flex;
+    justify-content: space-between;
+}
+.gr__left {
+    width: 50%;
+    font-size: smaller;
+}
+.gr__left p {
+    margin: 5px;
+}
+.gr__left .text-fn {
+    color: darkblue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.gr__right {
+    width: 150px;
+}
+.gr-checkbox {
+    width: 100%;
+    border: 1px solid silver;
+    display: inline-block;
+    align-items: center;
+}
+label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+.checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
