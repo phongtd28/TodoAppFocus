@@ -6,6 +6,7 @@ import {
     GET_USERS_ACTION,
     ON_FORGOT_PASS_ACTION,
     ON_LOGIN_ACTION,
+    ON_LOGOUT_ACTION,
     ON_REGISTER_ACTION
 } from '../constant'
 
@@ -35,6 +36,13 @@ export const onLoginAction = () => {
         type: ON_LOGIN_ACTION
     }
 }
+
+export const onLogoutAction = () => {
+    return {
+        type: ON_LOGOUT_ACTION
+    }
+}
+
 export const onRegisterAction = () => {
     return {
         type: ON_REGISTER_ACTION

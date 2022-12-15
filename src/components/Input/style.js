@@ -5,6 +5,7 @@ export const InputStyled = styled.div`
     display: flex;
     border: 2px solid #c65912;
     width: ${(props) => props.width || '440px'};
+    max-width: 100%;
     height: ${(props) => props.height || '25px'};
     overflow: hidden;
 
@@ -16,17 +17,16 @@ export const InputStyled = styled.div`
         text-transform: capitalize;
         width: 90px;
         display: flex;
-        flex-shrink: 0;
+        /* flex-shrink: 0; */
         align-items: center;
         padding-left: 5px;
     }
     input {
         font-size: ${(props) => props.fontSize};
         font-weight: ${(props) => props.fontWeight};
-        border: 1px solid silver;
-        margin: 2px;
-        flex-grow: 1;
-
+        margin: 1px;
+        width: ${(props) => (props.label ? 'calc(100% - 90px)' : '100%')};
+        /* flex-grow: 1; */
         &:focus {
             outline: 2px solid black;
         }

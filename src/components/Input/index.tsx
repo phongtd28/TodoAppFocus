@@ -19,7 +19,7 @@ type Props = {
 const Input = (props: Props) => {
     const { id, className, label, width, height, fontSize, fontWeight, register, fieldValue, required, onChange, onBlur } = props
     return (
-        <InputStyled className={className} height={height} width={width} fontSize={fontSize} fontWeight={fontWeight} tabIndex="-1">
+        <InputStyled label={label} className={className} height={height} width={width} fontSize={fontSize} fontWeight={fontWeight} tabIndex="-1">
             {label && <div className="input__label">{label}</div>}
             {register ? (
                 <input

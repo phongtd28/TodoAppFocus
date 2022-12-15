@@ -11,7 +11,7 @@ export type InitialStateType = {
 }
 
 const initialState: InitialStateType = {
-    isAuth: true,
+    isAuth: false,
     isLoading: false,
     isErrorCallApi: false,
     dataUsers: null,

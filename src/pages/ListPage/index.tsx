@@ -6,7 +6,7 @@ import { ContainerLayoutStyled } from '../../components/ContentLayout/style'
 import FormList from '../../components/FormList'
 import { screenDialogs } from '../../constant/ScreenDialog'
 import { RootStateType } from '../../store'
-import { onLoginAction, onRegisterAction } from '../../store/actions/HomepageAction'
+import { onLoginAction, onLogoutAction, onRegisterAction } from '../../store/actions/HomepageAction'
 import { InitialStateType, updateSingleField } from '../../store/reducers/HomepageReducer'
 import './style.css'
 
@@ -17,11 +17,11 @@ const ListPage = (props: any) => {
     const isErrorCallApi = useSelector((state: RootStateType) => state.homepageReducer.isErrorCallApi)
     const isAuth = useSelector((state: RootStateType) => state.homepageReducer.isAuth)
 
-    const username = localStorage.getItem('infomation')
+    const username = localStorage.getItem('infomation') || sessionStorage.getItem('infomation')
 
     const dispatch = useDispatch()
     const handleLogoutUser = () => {
-        localStorage.removeItem('infomation')
+        dispatch(onLogoutAction())
     }
     console.log('render')
 
@@ -29,7 +29,7 @@ const ListPage = (props: any) => {
         <ContainerLayoutStyled>
             <ContentLayout title="List">
                 <div className="header">
-                    {username && isAuth ? (
+                    {isAuth && username ? (
                         <div className="welcome">
                             <span className="gr-username">
                                 Welcometo <span className="username">{username}</span>

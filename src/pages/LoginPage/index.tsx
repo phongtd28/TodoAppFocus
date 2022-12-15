@@ -149,10 +149,10 @@ const LoginPage = (props: Props) => {
                     <div className="gr-function">
                         <div className="gr__left">
                             <p>
-                                <span className="text-fn" onClick={onRegister}>{`Not yet have account? Let's register.`}</span>
+                                <span tabIndex={0} className="text-fn" onClick={onRegister}>{`Not yet have account? Let's register.`}</span>
                             </p>
                             <p>
-                                <span className="text-fn" onClick={onForgotPass}>
+                                <span tabIndex={0} className="text-fn" onClick={onForgotPass}>
                                     Forgot the password? Click here.
                                 </span>
                             </p>

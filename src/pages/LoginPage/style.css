@@ -66,6 +66,9 @@
 .gr__right {
     width: 150px;
 }
+.text-fn:focus {
+    outline: 2px solid black;
+}
 .gr-checkbox {
     width: 100%;
     border: 1px solid silver;

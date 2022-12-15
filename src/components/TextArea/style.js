@@ -20,5 +20,8 @@ export const TextAreaStyled = styled.div`
         height: ${(props) => props.height || '80px'};
         max-width: 100%;
         border: none;
+        &:focus {
+            outline: 2px solid black;
+        }
     }
 `

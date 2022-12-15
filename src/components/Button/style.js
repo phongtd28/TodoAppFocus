@@ -9,7 +9,8 @@ export const ButtonStyled = styled.button`
     width: ${(props) => props.width || '90px'};
     padding: ${(props) => props.padding || '8px 16px'};
     margin: ${(props) => props.margin || '20px 0 0 0'};
-    border: ${(props) => props.border || '2px solid #c65912'};
+    outline: ${(props) => props.border || '2px solid #c65912'};
+    border: none;
     cursor: pointer;
     position: relative;
     z-index: 1;
@@ -37,7 +38,6 @@ export const ButtonStyled = styled.button`
         background-color: darkgray;
     }
     &:focus {
-        border: none;
         outline: 2px solid black;
         /* font-size: 15px; */
     }

@@ -30,16 +30,16 @@ const RegisterPage = (props: Props) => {
                 <Input label="username" />
                 <Input label="password" />
                 <div className="" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Input label="Phone" width="45%" />
-                    <Input label="email" width="45%" />
+                    <Input label="Phone" width="215px" />
+                    <Input label="email" width="215px" />
                 </div>
                 <TextArea label="address" />
                 <TextArea label="description" height="120px" />
                 <div className="gr-btn">
                     <Button text="save draft" color="#c65912" backgroundColor="#f8cbad" border="1px solid #c65912" />
-                    <Button text="save draft" color="#9b6501" backgroundColor="#f8cbad" border="none" />
-                    <Button text="save draft" color="white" backgroundColor="#c65912" border="none" />
-                    <Button text="save draft" color="white" backgroundColor="#f4b084" border="2px solid #c65912" />
+                    <Button text="reset" color="#9b6501" backgroundColor="#f8cbad" border="none" />
+                    <Button text="register" color="white" backgroundColor="#c65912" border="none" />
+                    <Button text="cancel" color="white" backgroundColor="#f4b084" border="2px solid #c65912" />
                 </div>
             </ContentLayout>
         </MaskLayoutStyled>
