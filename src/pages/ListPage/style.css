@@ -4,3 +4,13 @@
     justify-content: flex-end;
     gap: 10px;
 }
+
+.welcome {
+}
+.gr-username {
+    margin-right: 10px;
+}
+.username {
+    font-size: 12px;
+    font-weight: bold;
+}

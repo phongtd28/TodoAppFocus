@@ -9,10 +9,20 @@ import { screenDialogs } from '../../constant/ScreenDialog'
 import { updateSingleField } from '../../store/reducers/HomepageReducer'
 import './style.css'
 
-const RegisterPage = () => {
+type Props = {
+    openningDialogLogin?: boolean
+    onCloseDialogInLoginPage?: () => void
+}
+
+const RegisterPage = (props: Props) => {
+    const { openningDialogLogin, onCloseDialogInLoginPage } = props
     const dispatch = useDispatch()
     const onClose = () => {
-        dispatch(updateSingleField({ fieldName: 'openningDialog', fieldValue: screenDialogs.None }))
+        if (openningDialogLogin && onCloseDialogInLoginPage) {
+            return onCloseDialogInLoginPage()
+        } else {
+            dispatch(updateSingleField({ fieldName: 'openningDialog', fieldValue: screenDialogs.None }))
+        }
     }
     return (
         <MaskLayoutStyled zIndex="3" padding="70px 550px">
@@ -36,4 +46,4 @@ const RegisterPage = () => {
     )
 }
 
-export default RegisterPage
+export default React.memo(RegisterPage)

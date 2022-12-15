@@ -36,4 +36,9 @@ export const ButtonStyled = styled.button`
         cursor: not-allowed;
         background-color: darkgray;
     }
+    &:focus {
+        border: none;
+        outline: 2px solid black;
+        /* font-size: 15px; */
+    }
 `

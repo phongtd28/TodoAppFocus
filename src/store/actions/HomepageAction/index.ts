@@ -1,3 +1,4 @@
+import { IAuthenPayloadAction } from '../../../types/action'
 import {
     GET_AUTH_ACTION,
     GET_DATA_HOMEPAGE_ACTION,
@@ -18,9 +19,10 @@ export const onGetProductsAction = () => {
         type: GET_PRODUCTS_ACTION
     }
 }
-export const onGetAuthenAction = () => {
+export const onGetAuthenAction = (payload: IAuthenPayloadAction) => {
     return {
-        type: GET_AUTH_ACTION
+        type: GET_AUTH_ACTION,
+        payload
     }
 }
 export const onGetDataHomepageAction = () => {

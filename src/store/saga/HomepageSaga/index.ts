@@ -1,5 +1,6 @@
 import { take, call, put, takeLatest, all } from 'redux-saga/effects'
 import { getDataApi } from '../../../resources/api-constants'
+import { IUserType } from '../../../types/homepage'
 import { updateSingleField } from '../../reducers/HomepageReducer'
 import * as action from './../../actions/constant'
 
@@ -32,7 +33,30 @@ export function* sagaGetDataHomepage() {
         yield put(updateSingleField({ fieldName: 'isErrorCallApi', fieldValue: true }))
     }
 }
-export function* sagaGetAuth() {}
+export function* sagaGetAuth(action: any) {
+    try {
+        let isAuththen = false
+        const {
+            payload: { username, password, keepMeIn }
+        } = action
+        const { data } = yield call(getDataApi, 'users')
+        data.forEach((element: IUserType) => {
+            if (element.username !== username) return
+            if (element.username === username) {
+                if (element.password !== password) return
+                if (element.password === password) {
+                    isAuththen = true
+                }
+            }
+        })
+        if (isAuththen && keepMeIn) {
+            localStorage.setItem('infomation', username)
+        }
+        yield put(updateSingleField({ fieldName: 'isAuth', fieldValue: isAuththen }))
+    } catch (error) {
+        yield put(updateSingleField({ fieldName: 'isAuth', fieldValue: false }))
+    }
+}
 
 export default function* homepageSaga() {
     yield takeLatest(action.GET_USERS_ACTION, sagaGetUsers)

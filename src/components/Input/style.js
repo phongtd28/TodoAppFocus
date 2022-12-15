@@ -21,7 +21,14 @@ export const InputStyled = styled.div`
         padding-left: 5px;
     }
     input {
-        border: none;
+        font-size: ${(props) => props.fontSize};
+        font-weight: ${(props) => props.fontWeight};
+        border: 1px solid silver;
+        margin: 2px;
         flex-grow: 1;
+
+        &:focus {
+            outline: 2px solid black;
+        }
     }
 `

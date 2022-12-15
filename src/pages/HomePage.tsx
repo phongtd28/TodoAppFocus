@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useDispatch, connect } from 'react-redux'
 import { screenDialogs } from '../constant/ScreenDialog'
-import { RootState } from '../store'
+import { RootStateType } from '../store'
 import { onGetDataHomepageAction } from '../store/actions/HomepageAction'
 import ForgotPassPage from './ForgotPassPage'
 import ListPage from './ListPage'
@@ -13,7 +13,7 @@ import RegisterPage from './RegisterPage'
 const HomePage = () => {
     const dispatch = useDispatch()
 
-    const openningDialog = useSelector((state: RootState) => state.homepageReducer.openningDialog)
+    const openningDialog = useSelector((state: RootStateType) => state.homepageReducer.openningDialog)
 
     useEffect(() => {
         dispatch(onGetDataHomepageAction())

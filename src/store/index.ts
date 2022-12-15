@@ -10,4 +10,4 @@ const store = createStore(rootReducer, compose(applyMiddleware(sagaMiddleWare), 
 sagaMiddleWare.run(rootSaga)
 export default store
 
-export type RootState = ReturnType<typeof store.getState>
+export type RootStateType = ReturnType<typeof store.getState>

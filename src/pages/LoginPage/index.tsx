@@ -1,11 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import Button from '../../components/Button'
 import ContentLayout from '../../components/ContentLayout'
 import { MaskLayoutStyled } from '../../components/ContentLayout/style'
 import Input from '../../components/Input'
 import { screenDialogs } from '../../constant/ScreenDialog'
+import { RootStateType } from '../../store'
+import { onGetAuthenAction } from '../../store/actions/HomepageAction'
 import { updateSingleField } from '../../store/reducers/HomepageReducer'
+import { IAuthenPayloadAction } from '../../types/action'
 import ForgotPassPage from '../ForgotPassPage'
 import RegisterPage from '../RegisterPage'
 import './style.css'
@@ -16,16 +21,36 @@ const LoginPage = (props: Props) => {
     const [openningDialog, setOpenningDialog] = useState('')
     const [captcha, setCaptcha] = useState('')
 
+    const {
+        register,
+        getValues,
+        handleSubmit,
+        formState: { errors, isDirty, isSubmitting, isSubmitted, submitCount, isValid, isValidating }
+    } = useForm({
+        mode: 'onSubmit',
+        reValidateMode: 'onChange',
+        criteriaMode: 'firstError',
+        shouldFocusError: true,
+        shouldUnregister: false,
+        shouldUseNativeValidation: false,
+        delayError: undefined
+    })
+
     const dispatch = useDispatch()
+
+    const isAuth = useSelector((state: RootStateType) => state.homepageReducer.isAuth)
+
     const onClose = () => {
         dispatch(updateSingleField({ fieldName: 'openningDialog', fieldValue: screenDialogs.None }))
     }
+
+    const onCloseDialogInLoginPage = () => {
+        setOpenningDialog(screenDialogs.None)
+    }
     const onRegister = () => {
-        // dispatch(updateSingleField({ fieldName: 'openningDialog', fieldValue: screenDialogs.Register }))
         setOpenningDialog(screenDialogs.Register)
     }
     const onForgotPass = () => {
-        // dispatch(updateSingleField({ fieldName: 'openningDialog', fieldValue: screenDialogs.ForgotPass }))
         setOpenningDialog(screenDialogs.ForgotPass)
     }
 
@@ -53,6 +78,7 @@ const LoginPage = (props: Props) => {
         // eslint-disable-next-line @typescript-eslint/no-extra-semi
         ;(document.getElementById('captcha') as HTMLElement).appendChild(canv)
     }
+
     const validateCaptcha = () => {
         if ((document.getElementById('captchaText') as HTMLInputElement)?.value === captcha) {
             console.log('true')
@@ -63,33 +89,44 @@ const LoginPage = (props: Props) => {
             return false
         }
     }
+
+    const handleLoginPage = (data: any) => {
+        if (validateCaptcha()) {
+            console.log({ data })
+        } else {
+            document.getElementById('captchaText')?.focus()
+            createCaptcha()
+        }
+        dispatch(onGetAuthenAction(data))
+    }
+
     useEffect(() => {
         createCaptcha()
     }, [])
+    // console.log({ errors }, { isDirty }, { isSubmitting }, { isSubmitted }, { submitCount }, { isValid }, { isValidating })
 
     const RenderDialogOption = useMemo(() => {
         switch (openningDialog) {
             case screenDialogs.Register:
-                return <RegisterPage />
+                return <RegisterPage openningDialogLogin={true} onCloseDialogInLoginPage={onCloseDialogInLoginPage} />
             case screenDialogs.ForgotPass:
-                return <ForgotPassPage onClose={() => setOpenningDialog(screenDialogs.None)} />
+                return <ForgotPassPage onClose={onCloseDialogInLoginPage} />
             default:
                 return null
         }
     }, [openningDialog])
-    console.log(captcha)
 
     return (
         <>
             {RenderDialogOption}
             <MaskLayoutStyled zIndex="2" padding="50px 500px">
                 <ContentLayout title="Login" onClose={onClose}>
-                    <Input label="username" />
-                    <Input label="password" />
+                    <Input label="username" register={register} fieldValue="username" required={true} />
+                    <Input label="password" register={register} fieldValue="password" required={true} />
                     <div className="gr-capcha-code">
                         <div className="gr-capcha-left">
                             <div className="capcha-display">
-                                <span>capcha</span>
+                                <span>Capcha</span>
                                 <div className="" id="captcha">
                                     <canvas id="canvas" width="100" height="50"></canvas>
                                 </div>
@@ -98,7 +135,16 @@ const LoginPage = (props: Props) => {
                                 ↻
                             </span>
                         </div>
-                        <Input width="150px" height="40px" id="captchaText" />
+                        <Input
+                            width="150px"
+                            height="40px"
+                            id="captchaText"
+                            fontSize="24px"
+                            fontWeight="bolder"
+                            // register={register}
+                            // fieldValue="captchaCode"
+                            // required={true}
+                        />
                     </div>
                     <div className="gr-function">
                         <div className="gr__left">
@@ -113,15 +159,16 @@ const LoginPage = (props: Props) => {
                         </div>
                         <div className="gr__right">
                             <div className="gr-checkbox">
-                                <label htmlFor="keep-login">
-                                    <input className="checkbox" type="checkbox" id="keep-login" />
+                                <label htmlFor="keep-login" tabIndex={0}>
+                                    <input className="checkbox" type="checkbox" id="keep-login" tabIndex={-1} {...register('keepMeIn')} />
                                     <span>Keep me in.</span>
                                 </label>
                             </div>
                         </div>
                     </div>
+                    {isSubmitted && !isValid && <p className="error-message">tai khoan hoac mat khau khong chinh xac</p>}
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <Button text="login" color="white" width="120px" onClick={validateCaptcha} />
+                        <Button text="login" color="white" width="120px" onClick={handleSubmit(handleLoginPage)} />
                     </div>
                 </ContentLayout>
             </MaskLayoutStyled>

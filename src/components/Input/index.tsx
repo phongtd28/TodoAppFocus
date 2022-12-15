@@ -7,14 +7,31 @@ type Props = {
     label?: string
     width?: string
     height?: string
+    fontSize?: string
+    fontWeight?: string
+    register?: any
+    fieldValue?: string
+    required?: boolean
+    onChange?: () => void
+    onBlur?: () => void
 }
 
 const Input = (props: Props) => {
-    const { id, className, label, width, height } = props
+    const { id, className, label, width, height, fontSize, fontWeight, register, fieldValue, required, onChange, onBlur } = props
     return (
-        <InputStyled id={id} className={className} height={height} width={width} tabIndex="0">
+        <InputStyled className={className} height={height} width={width} fontSize={fontSize} fontWeight={fontWeight} tabIndex="-1">
             {label && <div className="input__label">{label}</div>}
-            <input />
+            {register ? (
+                <input
+                    {...register(fieldValue, {
+                        required,
+                        onChange,
+                        onBlur
+                    })}
+                />
+            ) : (
+                <input id={id} onChange={onChange} />
+            )}
         </InputStyled>
     )
 }

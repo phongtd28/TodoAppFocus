@@ -77,8 +77,19 @@ label {
     align-items: center;
     cursor: pointer;
 }
+label:focus {
+    outline: 2px solid black;
+}
 .checkbox {
     width: 20px;
     height: 20px;
     cursor: pointer;
+}
+
+.error-message {
+    text-align: center;
+    font-size: smaller;
+    color: red;
+    font-weight: bold;
+    padding-top: 20px;
 }
