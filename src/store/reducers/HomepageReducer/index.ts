@@ -2,7 +2,6 @@ import { createSlice } from '@reduxjs/toolkit'
 import { IProductType, IUserType } from '../../../types/homepage'
 
 export type InitialStateType = {
-    isAuth: boolean
     isLoading: boolean
     isErrorCallApi: boolean
     dataUsers: Array<IUserType> | null
@@ -11,7 +10,6 @@ export type InitialStateType = {
 }
 
 const initialState: InitialStateType = {
-    isAuth: false,
     isLoading: false,
     isErrorCallApi: false,
     dataUsers: null,
@@ -22,10 +20,10 @@ export const homepageReducer = createSlice({
     name: 'homepage',
     initialState: initialState,
     reducers: {
-        updateSingleField: (state, action) => {
+        updateSingleFieldHomePage: (state, action) => {
             return { ...state, [action.payload.fieldName]: action.payload.fieldValue }
         }
     }
 })
-export const { updateSingleField } = homepageReducer.actions
+export const { updateSingleFieldHomePage } = homepageReducer.actions
 export default homepageReducer.reducer

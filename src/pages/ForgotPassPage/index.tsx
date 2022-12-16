@@ -4,7 +4,6 @@ import Button from '../../components/Button'
 import ContentLayout from '../../components/ContentLayout'
 import { MaskLayoutStyled } from '../../components/ContentLayout/style'
 import Input from '../../components/Input'
-import { updateSingleField } from '../../store/reducers/HomepageReducer'
 import { ForgotPassPageStyled } from './style'
 
 type Props = {

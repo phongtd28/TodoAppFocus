@@ -13,7 +13,7 @@ import RegisterPage from './RegisterPage'
 const HomePage = () => {
     const dispatch = useDispatch()
 
-    const openningDialog = useSelector((state: RootStateType) => state.homepageReducer.openningDialog)
+    const openningDialog = useSelector((state: RootStateType) => state.homePageReducer.openningDialog)
 
     useEffect(() => {
         dispatch(onGetDataHomepageAction())

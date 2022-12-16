@@ -6,7 +6,7 @@ import { MaskLayoutStyled } from '../../components/ContentLayout/style'
 import Input from '../../components/Input'
 import TextArea from '../../components/TextArea'
 import { screenDialogs } from '../../constant/ScreenDialog'
-import { updateSingleField } from '../../store/reducers/HomepageReducer'
+import { updateSingleFieldHomePage } from '../../store/reducers/HomepageReducer'
 import './style.css'
 
 type Props = {
@@ -21,7 +21,7 @@ const RegisterPage = (props: Props) => {
         if (openningDialogLogin && onCloseDialogInLoginPage) {
             return onCloseDialogInLoginPage()
         } else {
-            dispatch(updateSingleField({ fieldName: 'openningDialog', fieldValue: screenDialogs.None }))
+            dispatch(updateSingleFieldHomePage({ fieldName: 'openningDialog', fieldValue: screenDialogs.None }))
         }
     }
     return (

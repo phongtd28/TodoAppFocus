@@ -6,18 +6,19 @@ import { ContainerLayoutStyled } from '../../components/ContentLayout/style'
 import FormList from '../../components/FormList'
 import { screenDialogs } from '../../constant/ScreenDialog'
 import { RootStateType } from '../../store'
-import { onLoginAction, onLogoutAction, onRegisterAction } from '../../store/actions/HomepageAction'
-import { InitialStateType, updateSingleField } from '../../store/reducers/HomepageReducer'
+import { onLogoutAction } from '../../store/actions/LoginAction'
+import { updateSingleFieldHomePage } from '../../store/reducers/HomepageReducer'
+import { getLocalstorageInfo, getSessionInfo } from '../../utility/functions'
 import './style.css'
 
 const ListPage = (props: any) => {
     // const { users, products, isError } = props
-    const users = useSelector((state: RootStateType) => state.homepageReducer.dataUsers)
-    const products = useSelector((state: RootStateType) => state.homepageReducer.dataProducts)
-    const isErrorCallApi = useSelector((state: RootStateType) => state.homepageReducer.isErrorCallApi)
-    const isAuth = useSelector((state: RootStateType) => state.homepageReducer.isAuth)
+    const users = useSelector((state: RootStateType) => state.homePageReducer.dataUsers)
+    const products = useSelector((state: RootStateType) => state.homePageReducer.dataProducts)
+    const isErrorCallApi = useSelector((state: RootStateType) => state.homePageReducer.isErrorCallApi)
+    const isAuth = useSelector((state: RootStateType) => state.loginPageReducer.isAuth)
 
-    const username = localStorage.getItem('infomation') || sessionStorage.getItem('infomation')
+    const username = getSessionInfo('infomation') || getLocalstorageInfo('infomation')
 
     const dispatch = useDispatch()
     const handleLogoutUser = () => {
@@ -43,14 +44,14 @@ const ListPage = (props: any) => {
                                 color="black"
                                 backgroundColor="white"
                                 margin="0"
-                                onClick={() => dispatch(updateSingleField({ fieldName: 'openningDialog', fieldValue: screenDialogs.Register }))}
+                                onClick={() => dispatch(updateSingleFieldHomePage({ fieldName: 'openningDialog', fieldValue: screenDialogs.Register }))}
                             />
                             <Button
                                 text="login"
                                 color="black"
                                 backgroundColor="white"
                                 margin="0"
-                                onClick={() => dispatch(updateSingleField({ fieldName: 'openningDialog', fieldValue: screenDialogs.Login }))}
+                                onClick={() => dispatch(updateSingleFieldHomePage({ fieldName: 'openningDialog', fieldValue: screenDialogs.Login }))}
                             />
                         </>
                     )}

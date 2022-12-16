@@ -8,8 +8,8 @@ import { MaskLayoutStyled } from '../../components/ContentLayout/style'
 import Input from '../../components/Input'
 import { screenDialogs } from '../../constant/ScreenDialog'
 import { RootStateType } from '../../store'
-import { onGetAuthenAction } from '../../store/actions/HomepageAction'
-import { updateSingleField } from '../../store/reducers/HomepageReducer'
+import { onGetAuthenAction } from '../../store/actions/LoginAction'
+import { updateSingleFieldHomePage } from '../../store/reducers/HomepageReducer'
 import { IAuthenPayloadAction } from '../../types/action'
 import ForgotPassPage from '../ForgotPassPage'
 import RegisterPage from '../RegisterPage'
@@ -38,10 +38,10 @@ const LoginPage = (props: Props) => {
 
     const dispatch = useDispatch()
 
-    const isAuth = useSelector((state: RootStateType) => state.homepageReducer.isAuth)
+    const isAuth = useSelector((state: RootStateType) => state.loginPageReducer.isAuth)
 
     const onClose = () => {
-        dispatch(updateSingleField({ fieldName: 'openningDialog', fieldValue: screenDialogs.None }))
+        dispatch(updateSingleFieldHomePage({ fieldName: 'openningDialog', fieldValue: screenDialogs.None }))
     }
 
     const onCloseDialogInLoginPage = () => {
@@ -92,12 +92,11 @@ const LoginPage = (props: Props) => {
 
     const handleLoginPage = (data: any) => {
         if (validateCaptcha()) {
-            console.log({ data })
+            dispatch(onGetAuthenAction(data))
         } else {
             document.getElementById('captchaText')?.focus()
             createCaptcha()
         }
-        dispatch(onGetAuthenAction(data))
     }
 
     useEffect(() => {

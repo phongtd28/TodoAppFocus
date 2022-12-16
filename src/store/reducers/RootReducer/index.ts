@@ -1,7 +1,11 @@
 import { combineReducers } from 'redux'
-import homepageReducer from '../HomepageReducer'
+import homePageReducer from '../HomepageReducer'
+import loginPageReducer from '../LoginReducer'
+import registerPageReducer from '../RegisterReducer'
 
 const rootReducer = combineReducers({
-    homepageReducer
+    homePageReducer,
+    loginPageReducer,
+    registerPageReducer
 })
 export default rootReducer
