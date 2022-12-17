@@ -24,6 +24,7 @@ export const ContentLayoutStyled = styled.div`
     height: 700px;
     border: 2px solid #c65912;
     background-color: white;
+    position: relative;
     .content {
         margin: 30px;
     }

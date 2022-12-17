@@ -28,7 +28,7 @@ const LoginPage = (props: Props) => {
         formState: { errors, isDirty, isSubmitting, isSubmitted, submitCount, isValid, isValidating }
     } = useForm({
         mode: 'onSubmit',
-        reValidateMode: 'onChange',
+        // reValidateMode: 'onChange',
         criteriaMode: 'firstError',
         shouldFocusError: true,
         shouldUnregister: false,
@@ -102,7 +102,6 @@ const LoginPage = (props: Props) => {
     useEffect(() => {
         createCaptcha()
     }, [])
-    // console.log({ errors }, { isDirty }, { isSubmitting }, { isSubmitted }, { submitCount }, { isValid }, { isValidating })
 
     const RenderDialogOption = useMemo(() => {
         switch (openningDialog) {

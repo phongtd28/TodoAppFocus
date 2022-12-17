@@ -3,6 +3,7 @@ import { screenDialogs } from '../../../constant/ScreenDialog'
 import { getDataApi } from '../../../resources/api-constants'
 import { IUserType } from '../../../types/homepage'
 import { updateSingleFieldHomePage } from '../../reducers/HomepageReducer'
+import { updateSingleFieldLoginPage } from '../../reducers/LoginReducer'
 import * as action from './../../actions/constant'
 
 export function* sagaGetUsers() {
@@ -27,7 +28,7 @@ export function* sagaGetDataHomepage() {
     try {
         const username = localStorage.getItem('infomation') || sessionStorage.getItem('infomation')
         if (username) {
-            yield put(updateSingleFieldHomePage({ fieldName: 'isAuth', fieldValue: true }))
+            yield put(updateSingleFieldLoginPage({ fieldName: 'isAuth', fieldValue: true }))
         }
         yield put(updateSingleFieldHomePage({ fieldName: 'isErrorCallApi', fieldValue: false }))
         const data: any[] = yield all([call(getDataApi, 'users'), call(getDataApi, 'products')])
