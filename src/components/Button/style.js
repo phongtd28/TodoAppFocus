@@ -41,4 +41,23 @@ export const ButtonStyled = styled.button`
         outline: 2px solid black;
         /* font-size: 15px; */
     }
+
+    .csv-link {
+        text-decoration: none;
+        font-weight: bold;
+        text-transform: capitalize;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        top: 0;
+        left: 0;
+        justify-content: center;
+        align-items: center;
+
+        &:focus {
+            outline: 2px solid black;
+            /* font-size: 15px; */
+        }
+    }
 `

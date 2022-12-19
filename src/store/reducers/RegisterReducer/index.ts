@@ -1,17 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit'
-import storage from 'redux-persist/lib/storage'
-import { IProductType, IUserType } from '../../../types/homepage'
-import { IRegisterUser } from '../../../types/registerPage'
 import { persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
+import { IRegisterUser } from '../../../types/registerPage'
 
 export type InitialStateType = {
     lastFocus?: 'username' | 'email' | 'password' | 'phone' | 'address'
     draftUser?: IRegisterUser
+    saveRegisterUser?: boolean
 }
 
 const initialState: InitialStateType = {
     lastFocus: 'username',
-    draftUser: undefined
+    draftUser: undefined,
+    saveRegisterUser: undefined
 }
 export const registerPageReducer = createSlice({
     name: 'registerpage',

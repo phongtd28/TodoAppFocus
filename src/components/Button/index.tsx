@@ -11,10 +11,12 @@ type Props = {
     padding?: string
     border?: string
     style?: any
+    tabIndex?: string
+    children?: any
     onClick?: () => void
 }
 const Button = (props: Props) => {
-    const { text, onClick, type, width, style, color, backgroundColor, margin, padding, border } = props
+    const { text, onClick, type, width, style, color, backgroundColor, margin, padding, border, children, tabIndex } = props
 
     return (
         <ButtonStyled
@@ -27,8 +29,10 @@ const Button = (props: Props) => {
             margin={margin}
             padding={padding}
             border={border}
+            tabIndex={tabIndex}
         >
             {text}
+            {children}
         </ButtonStyled>
     )
 }

@@ -19,7 +19,7 @@ const Dialog = (props: Props) => {
                 </div>
                 <div className="gr-btn">
                     <Button text="yes" color="#833c0b" backgroundColor="#f4b084" border="none" onClick={onConfirmDialog} />
-                    <Button text="yes" color="white" backgroundColor="#c65912" border="none" onClick={onCancelDialog} />
+                    <Button text="no" color="white" backgroundColor="#c65912" border="none" onClick={onCancelDialog} />
                 </div>
             </DialogStyled>
         </MaskDialogStyled>

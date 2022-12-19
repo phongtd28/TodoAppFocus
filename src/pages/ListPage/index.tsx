@@ -9,7 +9,12 @@ import { RootStateType } from '../../store'
 import { onLogoutAction } from '../../store/actions/LoginAction'
 import { updateSingleFieldHomePage } from '../../store/reducers/HomepageReducer'
 import { getLocalstorageInfo, getSessionInfo } from '../../utility/functions'
+import jsPDF from 'jspdf'
+import { CSVLink } from 'react-csv'
+import { renderToString } from 'react-dom/server'
 import './style.css'
+import { IRegisterUser } from '../../types/registerPage'
+import { IProductType } from '../../types/homepage'
 
 const ListPage = (props: any) => {
     // const { users, products, isError } = props
@@ -25,6 +30,32 @@ const ListPage = (props: any) => {
         dispatch(onLogoutAction())
     }
     console.log('render')
+
+    const ConvertFileToPdf = (obj: any) => {
+        const { typeSave } = obj
+
+        return typeSave === 'user' ? (
+            <div>
+                {users.map((item: IRegisterUser, index: number) => (
+                    <h3 key={index}>{item.username}</h3>
+                ))}
+            </div>
+        ) : (
+            <div>
+                {products.map((item: IProductType, index: number) => (
+                    <h3 key={index}>{item.name}</h3>
+                ))}
+            </div>
+        )
+    }
+
+    const saveFileToPdf = (typeSave: 'user' | 'product') => {
+        const string = renderToString(<ConvertFileToPdf typeSave={typeSave} />)
+        const pdf: any = new jsPDF('p', 'mm', 'a4')
+
+        pdf.fromHTML(string)
+        pdf.save('pdf')
+    }
 
     return (
         <ContainerLayoutStyled>
@@ -57,8 +88,8 @@ const ListPage = (props: any) => {
                     )}
                 </div>
                 <div className="main">
-                    <FormList title="List1" users={users} />
-                    <FormList title="List2" products={products} />
+                    <FormList title="List1" users={users} saveFileToPdf={() => saveFileToPdf('user')} />
+                    <FormList title="List2" products={products} saveFileToPdf={() => saveFileToPdf('product')} />
                 </div>
             </ContentLayout>
         </ContainerLayoutStyled>

@@ -4,7 +4,9 @@ export const ContainerLayoutStyled = styled.div`
     width: 100vw;
     height: 100vh;
     /* overflow: auto; */
-    background-image: linear-gradient(to right, #54728ed6, #00ffc6b0);
+    /* background-image: linear-gradient(to right, #54728ed6, #00ffc6b0); */
+    background: linear-gradient(#000000d7, rgba(11, 15, 15, 0.644)),
+        url('https://gaixinhkhoehang.com/wp-content/uploads/2022/10/20220812-Nguyen-Ngoc-Quynh-Giang-18.jpg'), no-repeat, center;
     display: flex;
     justify-content: center;
     align-items: center;

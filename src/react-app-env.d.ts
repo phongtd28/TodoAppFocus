@@ -2,3 +2,5 @@
 declare module 'redux-persist/lib/storage'
 declare module 'redux-persist/es/stateReconciler/autoMergeLevel2'
 declare module 'styled-components'
+declare module 'jspdf'
+declare module 'react-csv'

@@ -10,6 +10,7 @@ import Input from '../../components/Input'
 import TextArea from '../../components/TextArea'
 import { screenDialogs } from '../../constant/ScreenDialog'
 import { RootStateType } from '../../store'
+import { onRegisterSaveUserACtion } from '../../store/actions/RegisterAction'
 import { updateSingleFieldHomePage } from '../../store/reducers/HomepageReducer'
 import { updateSingleFieldRegisterPage } from '../../store/reducers/RegisterReducer'
 import { IRegisterUser } from '../../types/registerPage'
@@ -25,7 +26,7 @@ const RegisterPage = (props: Props) => {
     const { openningDialogLogin, onCloseDialogInLoginPage } = props
     const dispatch = useDispatch()
 
-    const { lastFocus, draftUser } = useSelector((state: RootStateType) => state.registerPageReducer)
+    const { lastFocus, draftUser, saveRegisterUser } = useSelector((state: RootStateType) => state.registerPageReducer)
 
     const {
         register,
@@ -58,7 +59,7 @@ const RegisterPage = (props: Props) => {
     }
 
     const handleRegisterUser = (data: IRegisterUser) => {
-        dispatch(updateSingleFieldRegisterPage({ fieldName: 'draftUser', fieldValue: data }))
+        dispatch(onRegisterSaveUserACtion(data))
     }
 
     const onFocusElement = () => {
@@ -67,7 +68,7 @@ const RegisterPage = (props: Props) => {
 
     const onSaveDraftUser = (data: IRegisterUser) => {
         dispatch(updateSingleFieldRegisterPage({ fieldName: 'draftUser', fieldValue: data }))
-        onClose()
+        // onClose()
     }
 
     const onResetRegisterUser = () => {
@@ -95,6 +96,12 @@ const RegisterPage = (props: Props) => {
         if (!lastFocus) setFocus('username')
         else setFocus(lastFocus)
     }, [lastFocus])
+
+    useEffect(() => {
+        if (saveRegisterUser) {
+            onResetRegisterUser()
+        }
+    }, [saveRegisterUser])
 
     return (
         <MaskLayoutStyled zIndex="3" padding="70px 550px">
