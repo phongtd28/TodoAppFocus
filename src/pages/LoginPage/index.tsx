@@ -1,3 +1,5 @@
+/* eslint-disable no-useless-escape */
+
 import React, { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
@@ -7,6 +9,7 @@ import ContentLayout from '../../components/ContentLayout'
 import { MaskLayoutStyled } from '../../components/ContentLayout/style'
 import Input from '../../components/Input'
 import { screenDialogs } from '../../constant/ScreenDialog'
+import useStaticFocus from '../../hook/useStaticFocus'
 import { RootStateType } from '../../store'
 import { onGetAuthenAction } from '../../store/actions/LoginAction'
 import { updateSingleFieldHomePage } from '../../store/reducers/HomepageReducer'
@@ -15,20 +18,46 @@ import ForgotPassPage from '../ForgotPassPage'
 import RegisterPage from '../RegisterPage'
 import './style.css'
 
+export const FormElement = {
+    close: 'btn-close',
+    username: 'username',
+    password: 'password',
+    refreshCaptcha: 'refreshCaptcha',
+    captchaField: 'captchaField',
+    register: 'register',
+    forgotPassword: 'forgotPassword',
+    keepLogin: 'keepLogin',
+    login: 'login'
+}
+
+export const FormValid = {
+    username: {
+        pattern: /^[a-zA-Z0-9]+$/
+    },
+    password: {
+        pattern: /^[a-zA-Z0-9]+$/
+    },
+    captcha: {
+        maxLength: 6
+    }
+}
+
 type Props = any
 
 const LoginPage = (props: Props) => {
     const [openningDialog, setOpenningDialog] = useState('')
     const [captcha, setCaptcha] = useState('')
+    const [validCaptcha, setValidCaptcha] = useState(false)
 
     const {
         register,
+        control,
         getValues,
         handleSubmit,
-        formState: { errors, isDirty, isSubmitting, isSubmitted, submitCount, isValid, isValidating }
+        formState: { errors, isDirty, isSubmitting, isSubmitted, submitCount, isValid, isValidating, isSubmitSuccessful }
     } = useForm({
         mode: 'onSubmit',
-        // reValidateMode: 'onChange',
+        reValidateMode: 'onChange',
         criteriaMode: 'firstError',
         shouldFocusError: true,
         shouldUnregister: false,
@@ -80,24 +109,28 @@ const LoginPage = (props: Props) => {
     }
 
     const validateCaptcha = () => {
-        if ((document.getElementById('captchaText') as HTMLInputElement)?.value === captcha) {
-            console.log('true')
+        if ((document.getElementById('captchaField') as HTMLInputElement)?.value === captcha) {
+            setValidCaptcha(true)
             return true
         } else {
-            console.log('false')
             createCaptcha()
+            setValidCaptcha(false)
             return false
         }
     }
 
     const handleLoginPage = (data: any) => {
+        console.log(data)
+
         if (validateCaptcha()) {
             dispatch(onGetAuthenAction(data))
         } else {
-            document.getElementById('captchaText')?.focus()
+            document.getElementById('captchaField')?.focus()
             createCaptcha()
         }
     }
+
+    const focusStatic = useStaticFocus({ focusOrderIds: [...Object.values(FormElement)] })
 
     useEffect(() => {
         createCaptcha()
@@ -114,13 +147,36 @@ const LoginPage = (props: Props) => {
         }
     }, [openningDialog])
 
+    console.log(isSubmitted, isSubmitting, isSubmitSuccessful, isValid, isDirty)
+
     return (
         <>
             {RenderDialogOption}
             <MaskLayoutStyled zIndex="2" padding="50px 500px">
-                <ContentLayout title="Login" onClose={onClose}>
-                    <Input label="username" register={register} fieldValue="username" required={true} />
-                    <Input label="password" register={register} fieldValue="password" required={true} />
+                <ContentLayout
+                    title="Login"
+                    onClose={onClose}
+                    onKeyDown={focusStatic?.forceMoveByKeyDown}
+                    onFocus={() => focusStatic?.setActive(FormElement.close)}
+                >
+                    <Input
+                        label="username"
+                        register={register}
+                        fieldValue={FormElement.username}
+                        required={true}
+                        pattern={FormValid.username.pattern}
+                        onFocus={() => focusStatic?.setActive(FormElement.username)}
+                        onKeyDown={focusStatic?.forceMoveByKeyDown}
+                    />
+                    <Input
+                        label="password"
+                        register={register}
+                        fieldValue={FormElement.password}
+                        required={true}
+                        pattern={FormValid.username.pattern}
+                        onFocus={() => focusStatic?.setActive(FormElement.password)}
+                        onKeyDown={focusStatic?.forceMoveByKeyDown}
+                    />
                     <div className="gr-capcha-code">
                         <div className="gr-capcha-left">
                             <div className="capcha-display">
@@ -129,7 +185,20 @@ const LoginPage = (props: Props) => {
                                     <canvas id="canvas" width="100" height="50"></canvas>
                                 </div>
                             </div>
-                            <span onClick={createCaptcha} className="capcha-change-function">
+                            <span
+                                id={FormElement.refreshCaptcha}
+                                className="capcha-change-function"
+                                tabIndex={0}
+                                onClick={createCaptcha}
+                                onFocus={() => focusStatic?.setActive(FormElement.refreshCaptcha)}
+                                onKeyDown={(e: any) => {
+                                    if (e.key === 'Enter') {
+                                        createCaptcha()
+                                        return
+                                    }
+                                    focusStatic?.forceMoveByKeyDown(e)
+                                }}
+                            >
                                 ↻
                             </span>
                         </div>
@@ -139,34 +208,91 @@ const LoginPage = (props: Props) => {
                             id="captchaText"
                             fontSize="24px"
                             fontWeight="bolder"
-                            // register={register}
-                            // fieldValue="captchaCode"
-                            // required={true}
+                            fieldValue={FormElement.captchaField}
+                            register={register}
+                            required={true}
+                            // maxLength={6}
+                            onFocus={() => focusStatic?.setActive(FormElement.captchaField)}
+                            onKeyDown={focusStatic?.forceMoveByKeyDown}
                         />
                     </div>
                     <div className="gr-function">
                         <div className="gr__left">
                             <p>
-                                <span tabIndex={0} className="text-fn" onClick={onRegister}>{`Not yet have account? Let's register.`}</span>
+                                <span
+                                    id={FormElement.register}
+                                    tabIndex={0}
+                                    className="text-fn"
+                                    onClick={onRegister}
+                                    onFocus={() => focusStatic?.setActive(FormElement.register)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            onRegister()
+                                            return
+                                        }
+                                        focusStatic?.forceMoveByKeyDown(e)
+                                    }}
+                                >{`Not yet have account? Let's register.`}</span>
                             </p>
                             <p>
-                                <span tabIndex={0} className="text-fn" onClick={onForgotPass}>
+                                <span
+                                    id={FormElement.forgotPassword}
+                                    tabIndex={0}
+                                    className="text-fn"
+                                    onClick={onForgotPass}
+                                    onFocus={() => focusStatic?.setActive(FormElement.forgotPassword)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            onForgotPass()
+                                            return
+                                        }
+                                        focusStatic?.forceMoveByKeyDown(e)
+                                    }}
+                                >
                                     Forgot the password? Click here.
                                 </span>
                             </p>
                         </div>
                         <div className="gr__right">
                             <div className="gr-checkbox">
-                                <label htmlFor="keep-login" tabIndex={0}>
+                                <label
+                                    htmlFor="keep-login"
+                                    tabIndex={0}
+                                    id={FormElement.keepLogin}
+                                    onFocus={() => focusStatic?.setActive(FormElement.keepLogin)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            document.getElementById('keep-login')?.click()
+                                            return
+                                        }
+                                        focusStatic?.forceMoveByKeyDown(e)
+                                    }}
+                                >
                                     <input className="checkbox" type="checkbox" id="keep-login" tabIndex={-1} {...register('keepMeIn')} />
                                     <span>Keep me in.</span>
                                 </label>
                             </div>
                         </div>
                     </div>
-                    {isSubmitted && !isValid && <p className="error-message">tai khoan hoac mat khau khong chinh xac</p>}
+                    {isSubmitSuccessful && !isAuth && (
+                        <p className="error-message">{validCaptcha ? 'Incorrect account or password' : 'Validate captcha is incorrect'}</p>
+                    )}
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <Button text="login" color="white" width="120px" onClick={handleSubmit(handleLoginPage)} />
+                        <Button
+                            id={FormElement.login}
+                            text="login"
+                            color="white"
+                            width="120px"
+                            onClick={handleSubmit(handleLoginPage)}
+                            onFocus={() => focusStatic?.setActive(FormElement.login)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleSubmit(handleLoginPage)
+                                    return
+                                }
+                                focusStatic?.forceMoveByKeyDown(e)
+                            }}
+                        />
                     </div>
                 </ContentLayout>
             </MaskLayoutStyled>

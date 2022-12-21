@@ -7,12 +7,13 @@ type Props = {
     register?: any
     fieldValue?: string
     required?: boolean
-    onChange?: () => void
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
     onBlur?: () => void
     onFocus?: () => void
+    onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
 }
 const TextArea = (props: Props) => {
-    const { label, height, register, required, fieldValue, onChange, onBlur, onFocus } = props
+    const { label, height, register, required, fieldValue, onChange, onBlur, onFocus, onKeyDown } = props
 
     return (
         <TextAreaStyled height={height}>
@@ -25,6 +26,7 @@ const TextArea = (props: Props) => {
                     onChange,
                     onBlur
                 })}
+                onKeyDown={onKeyDown}
             />
         </TextAreaStyled>
     )

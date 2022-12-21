@@ -3,16 +3,20 @@ import { IProductType, IUserType } from '../../types/homepage'
 import Button from '../Button'
 import { FormListStyled } from './style'
 import { CSVLink } from 'react-csv'
+import { FormElement } from '../../pages/ListPage'
 
 type Props = {
     title: string
+    tab?: number
     users?: Array<IUserType> | null
     products?: Array<IProductType> | null
     saveFileToPdf?: () => void
+    onKeyDown?: (e: React.KeyboardEvent<HTMLButtonElement | any>) => void
+    onFocus?: (id: string) => void
 }
 
 const FormList = (props: Props) => {
-    const { title, users, products, saveFileToPdf } = props
+    const { title, tab, users, products, saveFileToPdf, onKeyDown, onFocus } = props
 
     const header = users ? [{ label: 'User Name', key: 'username' }] : [{ label: 'Name', key: 'name' }]
 
@@ -23,6 +27,9 @@ const FormList = (props: Props) => {
         headers: header,
         data: data
     }
+
+    const idSaveCsv = tab === 1 ? FormElement.saveCSV1 : FormElement.saveCSV2
+    const idSavePdf = tab === 1 ? FormElement.savePDF1 : FormElement.savePDF2
     return (
         <FormListStyled>
             <div className="header__form">
@@ -35,12 +42,41 @@ const FormList = (props: Props) => {
 
                     <Button tabIndex="-1" color="#0d6a0e" backgroundColor="#c6efce" border="none" padding="2px 8px" margin="0">
                         {data && (
-                            <CSVLink className="csv-link" {...csvReport}>
+                            <CSVLink
+                                id={idSaveCsv}
+                                className="csv-link"
+                                {...csvReport}
+                                onFocus={() => onFocus?.(idSaveCsv)}
+                                onKeyDown={(e: any) => {
+                                    if (e.key === 'Enter') {
+                                        document.getElementById(idSaveCsv)?.click()
+                                        return
+                                    }
+                                    onKeyDown?.(e)
+                                }}
+                            >
                                 SAVE CSV
                             </CSVLink>
                         )}
                     </Button>
-                    <Button text="PDF" color="#a41117" backgroundColor="#fec7ce" border="none" padding="2px 8px" margin="0" onClick={saveFileToPdf} />
+                    <Button
+                        id={idSavePdf}
+                        text="PDF"
+                        color="#a41117"
+                        backgroundColor="#fec7ce"
+                        border="none"
+                        padding="2px 8px"
+                        margin="0"
+                        onClick={saveFileToPdf}
+                        onFocus={() => onFocus?.(idSavePdf)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                saveFileToPdf?.()
+                                return
+                            }
+                            onKeyDown?.(e)
+                        }}
+                    />
                 </div>
             </div>
             <div className="content__form">

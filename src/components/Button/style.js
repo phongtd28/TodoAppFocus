@@ -34,11 +34,14 @@ export const ButtonStyled = styled.button`
     }
     /* position: absolute; */
     &:disabled {
-        cursor: not-allowed;
         background-color: darkgray;
+        color: silver;
+        outline: 2px solid darkgray;
+        cursor: not-allowed;
     }
     &:focus {
         outline: 2px solid black;
+        box-shadow: 0px 0px 2px 4px silver;
         /* font-size: 15px; */
     }
 
@@ -57,6 +60,8 @@ export const ButtonStyled = styled.button`
 
         &:focus {
             outline: 2px solid black;
+            box-shadow: 0px 0px 2px 4px silver;
+
             /* font-size: 15px; */
         }
     }

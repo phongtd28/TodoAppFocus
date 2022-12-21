@@ -22,6 +22,7 @@ export const TextAreaStyled = styled.div`
         border: none;
         &:focus {
             outline: 2px solid black;
+            box-shadow: 0px 0px 2px 4px silver;
         }
     }
 `
