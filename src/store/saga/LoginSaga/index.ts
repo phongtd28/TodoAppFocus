@@ -1,7 +1,7 @@
 import { call, put, takeLatest, all } from 'redux-saga/effects'
 import { screenDialogs } from '../../../constant/ScreenDialog'
-import { getDataApi } from '../../../resources/api-constants'
-import { IUserType } from '../../../types/homepage'
+import { Services } from '../../../resources/api-constants'
+import { IUser } from '../../../types/user'
 import { removeLocalstorageInfo, removeSessionInfo, setLocalstorageInfo, setSessionInfo } from '../../../utility/functions'
 import { updateSingleFieldHomePage } from '../../reducers/HomepageReducer'
 import { updateSingleFieldLoginPage } from '../../reducers/LoginReducer'
@@ -13,8 +13,8 @@ export function* sagaGetAuth(action: any) {
         const {
             payload: { username, password, keepMeIn }
         } = action
-        const { data } = yield call(getDataApi, 'users')
-        data.forEach((element: IUserType) => {
+        const { data } = yield call(Services.getDataApiServices, 'users')
+        data.forEach((element: IUser) => {
             if (element.username !== username) return
             if (element.username === username) {
                 if (element.password !== password) return

@@ -4,19 +4,27 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
+import _ from 'lodash'
+import produce from 'immer'
 import Button from '../../components/Button'
 import ContentLayout from '../../components/ContentLayout'
 import { MaskLayoutStyled } from '../../components/ContentLayout/style'
 import Input from '../../components/Input'
+import { KeyBoard } from '../../constant/KeyBoard'
 import { screenDialogs } from '../../constant/ScreenDialog'
 import useStaticFocus from '../../hook/useStaticFocus'
 import { RootStateType } from '../../store'
 import { onGetAuthenAction } from '../../store/actions/LoginAction'
 import { updateSingleFieldHomePage } from '../../store/reducers/HomepageReducer'
-import { IAuthenPayloadAction } from '../../types/action'
 import ForgotPassPage from '../ForgotPassPage'
 import RegisterPage from '../RegisterPage'
 import './style.css'
+
+// interface ILoginPageProps extends React.PropsWithChildren {}
+interface ILoginPageState {
+    openningDialog: string
+    captcha: string
+}
 
 export const FormElement = {
     close: 'btn-close',
@@ -42,19 +50,28 @@ export const FormValid = {
     }
 }
 
-type Props = any
+const initialLoginPageState: ILoginPageState = {
+    openningDialog: '',
+    captcha: ''
+}
 
-const LoginPage = (props: Props) => {
-    const [openningDialog, setOpenningDialog] = useState('')
-    const [captcha, setCaptcha] = useState('')
-    const [validCaptcha, setValidCaptcha] = useState(false)
+const LoginPage = () => {
+    // const [openningDialog, handleStatePageChange]'openningDialog', = useState('')
+    // const [captcha, setCaptcha] = useState('')
+
+    /** @Component_Internal_State */
+    const [componentState, setComponentState] = React.useState<ILoginPageState>(initialLoginPageState)
+
+    /** @Component_Internal_Ref */
+
+    /** @During_Render */
+    const dispatch = useDispatch()
 
     const {
         register,
-        control,
-        getValues,
+
         handleSubmit,
-        formState: { errors, isDirty, isSubmitting, isSubmitted, submitCount, isValid, isValidating, isSubmitSuccessful }
+        formState: { isSubmitSuccessful, errors }
     } = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onChange',
@@ -65,22 +82,50 @@ const LoginPage = (props: Props) => {
         delayError: undefined
     })
 
-    const dispatch = useDispatch()
+    const focusStatic = useStaticFocus({ focusOrderIds: [...Object.values(FormElement)] })
 
     const isAuth = useSelector((state: RootStateType) => state.loginPageReducer.isAuth)
+
+    console.log(componentState)
+
+    /** @After_Render */
+    useEffect(() => {
+        focusStatic.onFocus(FormElement.username)
+        createCaptcha()
+    }, [])
+
+    useEffect(() => {
+        if (componentState.openningDialog === screenDialogs.None) {
+            setTimeout(() => {
+                focusStatic?.retryFocusElementBeforeOpenDialog()
+            }, 100)
+        }
+    }, [componentState.openningDialog])
+
+    /** @Component_Events */
+    const handleStatePageChange = (key: keyof ILoginPageState, value: ILoginPageState[keyof ILoginPageState]) => {
+        const newComponentState = produce(componentState, (draft) => {
+            draft[key] = value
+        })
+
+        setComponentState(newComponentState)
+
+        // const newComponentState = _.set({ ...componentState }, key, value)
+        // setComponentState(newComponentState)
+    }
 
     const onClose = () => {
         dispatch(updateSingleFieldHomePage({ fieldName: 'openningDialog', fieldValue: screenDialogs.None }))
     }
 
     const onCloseDialogInLoginPage = () => {
-        setOpenningDialog(screenDialogs.None)
+        handleStatePageChange('openningDialog', screenDialogs.None)
     }
-    const onRegister = () => {
-        setOpenningDialog(screenDialogs.Register)
+    const onOpenningRegisterPage = () => {
+        handleStatePageChange('openningDialog', screenDialogs.Register)
     }
-    const onForgotPass = () => {
-        setOpenningDialog(screenDialogs.ForgotPass)
+    const onOpenningForgotPassPage = () => {
+        handleStatePageChange('openningDialog', screenDialogs.ForgotPass)
     }
 
     const createCaptcha = () => {
@@ -96,7 +141,7 @@ const LoginPage = (props: Props) => {
         }
 
         const captchaCode = code.join('')
-        setCaptcha(captchaCode)
+        handleStatePageChange('captcha', captchaCode)
 
         const canv = document.createElement('canvas')
         const ctx: CanvasRenderingContext2D | null = canv.getContext('2d')
@@ -109,12 +154,10 @@ const LoginPage = (props: Props) => {
     }
 
     const validateCaptcha = () => {
-        if ((document.getElementById('captchaField') as HTMLInputElement)?.value === captcha) {
-            setValidCaptcha(true)
+        if ((document.getElementById('captchaField') as HTMLInputElement)?.value === componentState.captcha) {
             return true
         } else {
             createCaptcha()
-            setValidCaptcha(false)
             return false
         }
     }
@@ -130,14 +173,11 @@ const LoginPage = (props: Props) => {
         }
     }
 
-    const focusStatic = useStaticFocus({ focusOrderIds: [...Object.values(FormElement)] })
+    /** @Render_Simple_Fragment */
 
-    useEffect(() => {
-        createCaptcha()
-    }, [])
-
+    /** @Render_Complicated_Fragment */
     const RenderDialogOption = useMemo(() => {
-        switch (openningDialog) {
+        switch (componentState.openningDialog) {
             case screenDialogs.Register:
                 return <RegisterPage openningDialogLogin={true} onCloseDialogInLoginPage={onCloseDialogInLoginPage} />
             case screenDialogs.ForgotPass:
@@ -145,15 +185,14 @@ const LoginPage = (props: Props) => {
             default:
                 return null
         }
-    }, [openningDialog])
-
-    console.log(isSubmitted, isSubmitting, isSubmitSuccessful, isValid, isDirty)
+    }, [componentState.openningDialog])
 
     return (
         <>
             {RenderDialogOption}
             <MaskLayoutStyled zIndex="2" padding="50px 500px">
                 <ContentLayout
+                    id="login-page"
                     title="Login"
                     onClose={onClose}
                     onKeyDown={focusStatic?.forceMoveByKeyDown}
@@ -163,19 +202,21 @@ const LoginPage = (props: Props) => {
                         label="username"
                         register={register}
                         fieldValue={FormElement.username}
-                        required={true}
+                        required="Username incorrect"
                         pattern={FormValid.username.pattern}
                         onFocus={() => focusStatic?.setActive(FormElement.username)}
                         onKeyDown={focusStatic?.forceMoveByKeyDown}
+                        errors={errors?.[FormElement.username]?.message}
                     />
                     <Input
                         label="password"
                         register={register}
                         fieldValue={FormElement.password}
-                        required={true}
+                        required="Password incorrect"
                         pattern={FormValid.username.pattern}
                         onFocus={() => focusStatic?.setActive(FormElement.password)}
                         onKeyDown={focusStatic?.forceMoveByKeyDown}
+                        errors={errors?.[FormElement.password]?.message}
                     />
                     <div className="gr-capcha-code">
                         <div className="gr-capcha-left">
@@ -192,7 +233,7 @@ const LoginPage = (props: Props) => {
                                 onClick={createCaptcha}
                                 onFocus={() => focusStatic?.setActive(FormElement.refreshCaptcha)}
                                 onKeyDown={(e: any) => {
-                                    if (e.key === 'Enter') {
+                                    if (e.key === KeyBoard.Enter) {
                                         createCaptcha()
                                         return
                                     }
@@ -210,10 +251,11 @@ const LoginPage = (props: Props) => {
                             fontWeight="bolder"
                             fieldValue={FormElement.captchaField}
                             register={register}
-                            required={true}
-                            // maxLength={6}
+                            required="Captcha incorrect"
+                            valueValid={componentState.captcha ? componentState.captcha : undefined}
                             onFocus={() => focusStatic?.setActive(FormElement.captchaField)}
                             onKeyDown={focusStatic?.forceMoveByKeyDown}
+                            errors={errors?.[FormElement.captchaField]?.message}
                         />
                     </div>
                     <div className="gr-function">
@@ -223,11 +265,11 @@ const LoginPage = (props: Props) => {
                                     id={FormElement.register}
                                     tabIndex={0}
                                     className="text-fn"
-                                    onClick={onRegister}
+                                    onClick={onOpenningRegisterPage}
                                     onFocus={() => focusStatic?.setActive(FormElement.register)}
                                     onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            onRegister()
+                                        if (e.key === KeyBoard.Enter) {
+                                            onOpenningRegisterPage()
                                             return
                                         }
                                         focusStatic?.forceMoveByKeyDown(e)
@@ -239,11 +281,11 @@ const LoginPage = (props: Props) => {
                                     id={FormElement.forgotPassword}
                                     tabIndex={0}
                                     className="text-fn"
-                                    onClick={onForgotPass}
+                                    onClick={onOpenningForgotPassPage}
                                     onFocus={() => focusStatic?.setActive(FormElement.forgotPassword)}
                                     onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            onForgotPass()
+                                        if (e.key === KeyBoard.Enter) {
+                                            onOpenningForgotPassPage()
                                             return
                                         }
                                         focusStatic?.forceMoveByKeyDown(e)
@@ -261,7 +303,7 @@ const LoginPage = (props: Props) => {
                                     id={FormElement.keepLogin}
                                     onFocus={() => focusStatic?.setActive(FormElement.keepLogin)}
                                     onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
+                                        if (e.key === KeyBoard.Enter) {
                                             document.getElementById('keep-login')?.click()
                                             return
                                         }
@@ -274,9 +316,9 @@ const LoginPage = (props: Props) => {
                             </div>
                         </div>
                     </div>
-                    {isSubmitSuccessful && !isAuth && (
+                    {/* {isSubmitSuccessful && !isAuth && (
                         <p className="error-message">{validCaptcha ? 'Incorrect account or password' : 'Validate captcha is incorrect'}</p>
-                    )}
+                    )} */}
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <Button
                             id={FormElement.login}
@@ -286,7 +328,7 @@ const LoginPage = (props: Props) => {
                             onClick={handleSubmit(handleLoginPage)}
                             onFocus={() => focusStatic?.setActive(FormElement.login)}
                             onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
+                                if (e.key === KeyBoard.Enter) {
                                     handleSubmit(handleLoginPage)
                                     return
                                 }

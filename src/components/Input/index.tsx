@@ -1,4 +1,5 @@
 import React from 'react'
+import { FieldError, FieldErrorsImpl, FieldValues, Merge, UseFormRegister, ValidateResult, ValidationRule } from 'react-hook-form'
 import { InputStyled } from './style'
 
 type Props = {
@@ -10,14 +11,16 @@ type Props = {
     height?: string
     fontSize?: string
     fontWeight?: string
-    register?: any
-    fieldValue?: string
-    required?: boolean
+    register?: UseFormRegister<FieldValues>
+    fieldValue: string
+    required?: boolean | string
+    valueValid?: string
+    errors?: string | FieldError | Merge<FieldError, FieldErrorsImpl<any>>
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
     onBlur?: () => void
     onFocus?: () => void
     onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
-    pattern?: object
+    pattern?: ValidationRule<RegExp>
     maxLength?: number
 }
 
@@ -34,6 +37,8 @@ const Input = (props: Props) => {
         register,
         fieldValue,
         required,
+        valueValid,
+        errors,
         onChange,
         onBlur,
         onFocus,
@@ -41,27 +46,57 @@ const Input = (props: Props) => {
         pattern,
         maxLength
     } = props
+
     return (
-        <InputStyled label={label} className={className} height={height} width={width} fontSize={fontSize} fontWeight={fontWeight} tabIndex="-1">
-            {!!label && <div className="input__label">{label}</div>}
-            {register ? (
-                <input
-                    id={fieldValue}
-                    type={type}
-                    {...register(fieldValue, {
-                        required,
-                        onChange,
-                        onBlur,
-                        pattern,
-                        maxLength: maxLength
-                    })}
-                    onFocus={onFocus}
-                    onKeyDown={onKeyDown}
-                />
-            ) : (
-                <input id={id} onChange={onChange} />
-            )}
-        </InputStyled>
+        <>
+            <InputStyled
+                errors={errors as string}
+                label={label}
+                className={className}
+                height={height}
+                width={width}
+                fontSize={fontSize}
+                fontWeight={fontWeight}
+                tabIndex="-1"
+            >
+                {!!label && <div className="input__label">{label}</div>}
+                {register ? (
+                    valueValid ? (
+                        <input
+                            id={fieldValue}
+                            type={type}
+                            {...register(fieldValue, {
+                                required,
+                                onChange,
+                                onBlur,
+                                pattern,
+                                maxLength,
+                                validate: (value) => value === valueValid
+                            })}
+                            onFocus={onFocus}
+                            onKeyDown={onKeyDown}
+                        />
+                    ) : (
+                        <input
+                            id={fieldValue}
+                            type={type}
+                            {...register(fieldValue, {
+                                required,
+                                onChange,
+                                onBlur,
+                                pattern,
+                                maxLength
+                            })}
+                            onFocus={onFocus}
+                            onKeyDown={onKeyDown}
+                        />
+                    )
+                ) : (
+                    <input id={id} onChange={onChange} />
+                )}
+            </InputStyled>
+            {/* <p className="error-field">{!!errors && (errors as string)}</p> */}
+        </>
     )
 }
 export default React.memo(Input)

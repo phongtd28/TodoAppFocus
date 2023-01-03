@@ -12,9 +12,10 @@ import { getLocalstorageInfo, getSessionInfo } from '../../utility/functions'
 import jsPDF from 'jspdf'
 import { renderToString } from 'react-dom/server'
 import './style.css'
-import { IRegisterUser } from '../../types/registerPage'
-import { IProductType } from '../../types/homepage'
-import useStaticFocus from '../../hook/useStaticFocus'
+import { IProductType } from '../../types/product'
+import useStaticFocus, { eventKey, IEvent } from '../../hook/useStaticFocus'
+import { IRegisterUser } from '../../types/user'
+import { KeyBoard } from '../../constant/KeyBoard'
 
 export const FormElement = {
     btnLogout: 'btnLogout',
@@ -26,12 +27,10 @@ export const FormElement = {
     savePDF2: 'savePDF2'
 }
 
-const ListPage = (props: any) => {
-    // const { users, products, isError } = props
-    const { dataUsers, dataProducts } = useSelector((state: RootStateType) => state.homePageReducer)
-    // const products = useSelector((state: RootStateType) => state.homePageReducer.dataProducts)
+const ListPage = () => {
+    /** @During_Render */
+    const { dataUsers, dataProducts, openningDialog } = useSelector((state: RootStateType) => state.homePageReducer)
 
-    const isErrorCallApi = useSelector((state: RootStateType) => state.homePageReducer.isErrorCallApi)
     const { isAuth } = useSelector((state: RootStateType) => state.loginPageReducer)
 
     const dispatch = useDispatch()
@@ -40,6 +39,21 @@ const ListPage = (props: any) => {
 
     const focusStatic = useStaticFocus({ focusOrderIds: [...Object.values(FormElement)] })
 
+    /** @After_Render */
+    /* retry focus element before openning dialog */
+    useEffect(() => {
+        if (openningDialog === screenDialogs.None) {
+            // setTimeout(() => {
+            focusStatic?.retryFocusElementBeforeOpenDialog()
+            // }, 100)
+        }
+    }, [openningDialog])
+
+    useEffect(() => {
+        isAuth ? focusStatic?.onFocus(FormElement.btnLogout) : focusStatic?.onFocus(FormElement.btnRegister)
+    }, [isAuth])
+
+    /** @Component_Events */
     const handleLogoutUser = () => {
         dispatch(onLogoutAction())
     }
@@ -50,7 +64,7 @@ const ListPage = (props: any) => {
         return typeSave === 'user' ? (
             <div>
                 {dataUsers.map((item: IRegisterUser, index: number) => (
-                    <h3 key={index}>{item.username}</h3>
+                    <h3 key={index}>{item?.username}</h3>
                 ))}
             </div>
         ) : (
@@ -74,12 +88,9 @@ const ListPage = (props: any) => {
 
     const onOpenningLoginPage = () => dispatch(updateSingleFieldHomePage({ fieldName: 'openningDialog', fieldValue: screenDialogs.Login }))
 
-    useEffect(() => {
-        console.log({ dataUsers })
-    }, [])
     return (
         <ContainerLayoutStyled>
-            <ContentLayout title="List">
+            <ContentLayout title="List" id="list-page">
                 <div className="header">
                     {isAuth && username ? (
                         <div className="welcome">
@@ -90,8 +101,9 @@ const ListPage = (props: any) => {
                                 id={FormElement.btnLogout}
                                 onFocus={() => focusStatic?.setActive(FormElement.btnLogout)}
                                 onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
+                                    if (e.key === KeyBoard.Enter) {
                                         handleLogoutUser()
+                                        e.preventDefault()
                                         return
                                     }
                                     focusStatic?.forceMoveByKeyDown(e)
@@ -113,8 +125,10 @@ const ListPage = (props: any) => {
                                 onClick={onOpenningRegisterPage}
                                 onFocus={() => focusStatic.setActive(FormElement.btnRegister)}
                                 onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
+                                    if (e.key === KeyBoard.Enter) {
                                         onOpenningRegisterPage()
+                                        e.preventDefault()
+
                                         return
                                     }
                                     focusStatic?.forceMoveByKeyDown(e)
@@ -129,8 +143,10 @@ const ListPage = (props: any) => {
                                 onClick={onOpenningLoginPage}
                                 onFocus={() => focusStatic.setActive(FormElement.btnLogin)}
                                 onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
+                                    if (e.key === KeyBoard.Enter) {
                                         onOpenningLoginPage()
+                                        e.preventDefault()
+
                                         return
                                     }
                                     focusStatic?.forceMoveByKeyDown(e)
@@ -161,12 +177,4 @@ const ListPage = (props: any) => {
         </ContainerLayoutStyled>
     )
 }
-// const mapStateToProps = (state: any) => {
-//     return {
-//         users: state.homepageReducer.dataUsers,
-//         products: state.homepageReducer.dataProducts,
-//         isError: state.homepageReducer.isError
-//     }
-// }
-// export default connect(mapStateToProps)(React.memo(ListPage))
 export default React.memo(ListPage)

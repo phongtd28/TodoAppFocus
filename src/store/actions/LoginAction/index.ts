@@ -1,7 +1,7 @@
-import { IAuthenPayloadAction } from '../../../types/action'
+import { ILoginUser } from '../../../types/user'
 import { GET_AUTH_ACTION, ON_FORGOT_PASS_ACTION, ON_LOGIN_ACTION, ON_LOGOUT_ACTION } from '../constant'
 
-export const onGetAuthenAction = (payload: IAuthenPayloadAction) => {
+export const onGetAuthenAction = (payload: ILoginUser) => {
     return {
         type: GET_AUTH_ACTION,
         payload

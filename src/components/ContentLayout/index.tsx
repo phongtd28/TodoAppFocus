@@ -1,8 +1,10 @@
 import React from 'react'
+import { KeyBoard } from '../../constant/KeyBoard'
 import Button from '../Button'
 import { ContentLayoutStyled, ContentHeaderStyled, ContainerLayoutStyled, MaskLayoutStyled } from './style'
 
 type Props = {
+    id?: string
     title: string
     children?: any
     onClose?: () => void
@@ -11,9 +13,9 @@ type Props = {
 }
 
 const ContentLayout = (props: Props) => {
-    const { title, children, onClose, onKeyDown, onFocus } = props
+    const { id, title, children, onClose, onKeyDown, onFocus } = props
     return (
-        <ContentLayoutStyled>
+        <ContentLayoutStyled id={id}>
             <ContentHeaderStyled>
                 <div className="title__header">
                     <span>{title}</span>
@@ -27,8 +29,9 @@ const ContentLayout = (props: Props) => {
                         border="none"
                         onClick={onClose}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
+                            if (e.key === KeyBoard.Enter) {
                                 onClose()
+                                e.preventDefault()
                                 return
                             }
                             onKeyDown?.(e)

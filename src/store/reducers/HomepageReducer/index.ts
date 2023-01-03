@@ -1,10 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { IProductType, IUserType } from '../../../types/homepage'
+import { screenDialogs } from '../../../constant/ScreenDialog'
+import { IProductType } from '../../../types/product'
+import { IUser } from '../../../types/user'
 
 export type InitialStateType = {
     isLoading: boolean
     isErrorCallApi: boolean
-    dataUsers: Array<IUserType> | null
+    dataUsers: Array<IUser> | null
     dataProducts: Array<IProductType> | null
     openningDialog: string
 }
@@ -14,7 +16,7 @@ const initialState: InitialStateType = {
     isErrorCallApi: false,
     dataUsers: null,
     dataProducts: null,
-    openningDialog: ''
+    openningDialog: screenDialogs.None
 }
 export const homepageReducer = createSlice({
     name: 'homepage',

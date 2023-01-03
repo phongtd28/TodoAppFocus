@@ -1,5 +1,6 @@
 import React from 'react'
 import _ from 'lodash'
+import { KeyBoard } from '../../constant/KeyBoard'
 type IFocusableElement = HTMLInputElement | HTMLButtonElement | HTMLTextAreaElement | HTMLSpanElement | null | any
 
 export type IFocusOrder = {
@@ -11,14 +12,14 @@ type IParams = {
     focusOrderIds?: (string | number)[]
 }
 
-type IEvent = React.KeyboardEvent<HTMLInputElement | HTMLDivElement | HTMLButtonElement>
+export type IEvent = React.KeyboardEvent<HTMLInputElement | HTMLDivElement | HTMLButtonElement> | KeyboardEvent
 const isKey = (e: IEvent, key: string) => !e.shiftKey && !e.altKey && e.key === key
 export const eventKey = {
-    Enter: (e: IEvent) => isKey(e, 'Enter'),
-    Tab: (e: IEvent) => isKey(e, 'Tab'),
-    ShiftTab: (e: IEvent) => e.shiftKey && e.key === 'Tab',
-    ArrowLeft: (e: IEvent) => isKey(e, 'ArrowLeft'),
-    ArrowRight: (e: IEvent) => isKey(e, 'ArrowRight')
+    Enter: (e: IEvent) => isKey(e, KeyBoard.Enter),
+    Tab: (e: IEvent) => isKey(e, KeyBoard.Tab),
+    ShiftTab: (e: IEvent) => e.shiftKey && e.key === KeyBoard.Tab,
+    ArrowLeft: (e: IEvent) => isKey(e, KeyBoard.ArrowLeft),
+    ArrowRight: (e: IEvent) => isKey(e, KeyBoard.ArrowRight)
 }
 
 export const FocusDirection = {
@@ -43,7 +44,7 @@ const isDisabledOrNotExistElement = (id: string) => {
 
 const useStaticFocus = ({ focusOrderIds = [] }: IParams) => {
     const focusOrders = React.useRef<IFocusOrder[]>(focusOrderIds.map((id) => ({ id: id.toString(), focusable: true })))
-    const activeIndex = React.useRef<number | null>(null)
+    const activeIndex = React.useRef<number>(-1)
     const behaviorMove = React.useRef(FocusDirection.none)
 
     const getFocusableIndex = (id: string | null) => focusOrders.current.findIndex((item) => item.id === id)
@@ -63,8 +64,6 @@ const useStaticFocus = ({ focusOrderIds = [] }: IParams) => {
     const setActive = (id: string | null) => {
         const newActiveIndex = getFocusableIndex(id)
         if (newActiveIndex >= 0) {
-            console.log('----setactive ', focusOrders.current[newActiveIndex])
-
             const prevActiveIndex = activeIndex.current
             activeIndex.current = newActiveIndex
             focusOrders.current[newActiveIndex].focusable = true
@@ -75,7 +74,7 @@ const useStaticFocus = ({ focusOrderIds = [] }: IParams) => {
         }
         const isFocusing = focusOrders.current?.some((item) => item?.id && item?.id === (getActiveElement() || ''))
 
-        if (!isFocusing) activeIndex.current = null
+        if (!isFocusing) activeIndex.current = -1
 
         return null
     }
@@ -161,6 +160,14 @@ const useStaticFocus = ({ focusOrderIds = [] }: IParams) => {
         behaviorMove.current = FocusDirection.none
     }
 
+    /* retry focus element before open dialog */
+    const retryFocusElementBeforeOpenDialog = () => {
+        if (isDisabledOrNotExistElement(focusOrders.current?.[activeIndex.current]?.id)) return
+        else {
+            onFocus(focusOrders.current?.[activeIndex.current]?.id)
+        }
+    }
+
     const forceMoveByKeyDown = (e: any) => {
         onKeyDown(e)
         moveByKeyDown()
@@ -174,7 +181,9 @@ const useStaticFocus = ({ focusOrderIds = [] }: IParams) => {
         next,
         previous,
         setActive,
-        forceMoveByKeyDown
+        forceMoveByKeyDown,
+        onFocus,
+        retryFocusElementBeforeOpenDialog
     }
 }
 

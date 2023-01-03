@@ -1,14 +1,16 @@
 import React from 'react'
-import { IProductType, IUserType } from '../../types/homepage'
+import { IProductType } from '../../types/product'
 import Button from '../Button'
 import { FormListStyled } from './style'
 import { CSVLink } from 'react-csv'
 import { FormElement } from '../../pages/ListPage'
+import { IUser } from '../../types/user'
+import { KeyBoard } from '../../constant/KeyBoard'
 
 type Props = {
     title: string
     tab?: number
-    users?: Array<IUserType> | null
+    users?: Array<IUser> | null
     products?: Array<IProductType> | null
     saveFileToPdf?: () => void
     onKeyDown?: (e: React.KeyboardEvent<HTMLButtonElement | any>) => void
@@ -48,7 +50,7 @@ const FormList = (props: Props) => {
                                 {...csvReport}
                                 onFocus={() => onFocus?.(idSaveCsv)}
                                 onKeyDown={(e: any) => {
-                                    if (e.key === 'Enter') {
+                                    if (e.key === KeyBoard.Enter) {
                                         document.getElementById(idSaveCsv)?.click()
                                         return
                                     }
@@ -70,7 +72,7 @@ const FormList = (props: Props) => {
                         onClick={saveFileToPdf}
                         onFocus={() => onFocus?.(idSavePdf)}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
+                            if (e.key === KeyBoard.Enter) {
                                 saveFileToPdf?.()
                                 return
                             }

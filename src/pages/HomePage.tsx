@@ -11,14 +11,16 @@ import LoginPage from './LoginPage'
 import RegisterPage from './RegisterPage'
 
 const HomePage = () => {
+    /** @During_Render */
     const dispatch = useDispatch()
-
     const openningDialog = useSelector((state: RootStateType) => state.homePageReducer.openningDialog)
 
+    /** @After_Render */
     useEffect(() => {
         dispatch(onGetDataHomepageAction())
     }, [])
 
+    /** @Render_Complicated_Fragment */
     const RenderDialogOption = useMemo(() => {
         switch (openningDialog) {
             case screenDialogs.Login:

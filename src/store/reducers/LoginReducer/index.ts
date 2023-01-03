@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { IProductType, IUserType } from '../../../types/homepage'
 
 export type InitialStateType = {
     isAuth: boolean

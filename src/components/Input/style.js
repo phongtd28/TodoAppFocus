@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import '../../styles/_variables.sass'
 export const InputStyled = styled.div`
     max-width: 100%;
@@ -7,10 +7,22 @@ export const InputStyled = styled.div`
     width: ${(props) => props.width || '440px'};
     max-width: 100%;
     height: ${(props) => props.height || '25px'};
-    overflow: hidden;
-
+    /* overflow: hidden; */
     margin-bottom: 20px;
+    position: relative;
 
+    ::after {
+        ${(props) =>
+            props.errors &&
+            css`
+                content: ${(props) => "'" + `${props.errors}` + "'"};
+                position: absolute;
+                top: 105%;
+                left: ${(props) => (props.label ? '91px' : '1px')};
+                font-size: 10px;
+                color: red;
+            `}
+    }
     .input__label {
         background-color: #c65912;
         color: white;

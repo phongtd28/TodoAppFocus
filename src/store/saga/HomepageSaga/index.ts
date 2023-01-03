@@ -1,14 +1,12 @@
-import { take, call, put, takeLatest, all } from 'redux-saga/effects'
-import { screenDialogs } from '../../../constant/ScreenDialog'
-import { getDataApi } from '../../../resources/api-constants'
-import { IUserType } from '../../../types/homepage'
+import { all, call, put, takeLatest } from 'redux-saga/effects'
+import { Services } from '../../../resources/api-constants'
 import { updateSingleFieldHomePage } from '../../reducers/HomepageReducer'
 import { updateSingleFieldLoginPage } from '../../reducers/LoginReducer'
 import * as action from './../../actions/constant'
 
 export function* sagaGetUsers() {
     try {
-        const { data } = yield call(getDataApi, 'users')
+        const { data } = yield call(Services.getDataApiServices, 'users')
         yield put(updateSingleFieldHomePage({ fieldName: 'dataUsers', fieldValue: data }))
     } catch (error) {
         yield put(updateSingleFieldHomePage({ fieldName: 'isErrorCallApi', fieldValue: true }))
@@ -17,7 +15,7 @@ export function* sagaGetUsers() {
 
 export function* sagaGetProducts() {
     try {
-        const { data } = yield call(getDataApi, 'products')
+        const { data } = yield call(Services.getDataApiServices, 'products')
         yield put(updateSingleFieldHomePage({ fieldName: 'dataProducts', fieldValue: data }))
     } catch (error) {
         yield put(updateSingleFieldHomePage({ fieldName: 'isErrorCallApi', fieldValue: true }))
@@ -31,7 +29,7 @@ export function* sagaGetDataHomepage() {
             yield put(updateSingleFieldLoginPage({ fieldName: 'isAuth', fieldValue: true }))
         }
         yield put(updateSingleFieldHomePage({ fieldName: 'isErrorCallApi', fieldValue: false }))
-        const data: any[] = yield all([call(getDataApi, 'users'), call(getDataApi, 'products')])
+        const data: any[] = yield all([call(Services.getDataApiServices, 'users'), call(Services.getDataApiServices, 'products')])
         const [users, products] = data
         yield put(updateSingleFieldHomePage({ fieldName: 'dataProducts', fieldValue: products.data }))
         yield put(updateSingleFieldHomePage({ fieldName: 'dataUsers', fieldValue: users.data }))

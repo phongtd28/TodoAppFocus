@@ -1,5 +1,6 @@
+import produce from 'immer'
 import React, { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { FieldValues, useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import Button from '../../components/Button'
@@ -8,14 +9,30 @@ import { MaskLayoutStyled } from '../../components/ContentLayout/style'
 import Dialog from '../../components/Dialog'
 import Input from '../../components/Input'
 import TextArea from '../../components/TextArea'
+import { KeyBoard } from '../../constant/KeyBoard'
 import { screenDialogs } from '../../constant/ScreenDialog'
 import useStaticFocus from '../../hook/useStaticFocus'
 import { RootStateType } from '../../store'
 import { onRegisterSaveUserACtion } from '../../store/actions/RegisterAction'
 import { updateSingleFieldHomePage } from '../../store/reducers/HomepageReducer'
 import { updateSingleFieldRegisterPage } from '../../store/reducers/RegisterReducer'
-import { IRegisterUser } from '../../types/registerPage'
+import { IRegisterUser } from '../../types/user'
 import './style.css'
+
+type IRegisterPageProps = {
+    openningDialogLogin?: boolean
+    onCloseDialogInLoginPage?: () => void
+}
+
+type IRegisterPageState = {
+    openningDialogConfirm: boolean
+    isFormEmpty: boolean
+}
+
+const initialRegisterPageState: IRegisterPageState = {
+    openningDialogConfirm: false,
+    isFormEmpty: true
+}
 
 export const FormElement = {
     close: 'btn-close',
@@ -31,19 +48,14 @@ export const FormElement = {
     cancel: 'cancel'
 }
 
-type Props = {
-    openningDialogLogin?: boolean
-    onCloseDialogInLoginPage?: () => void
-}
+const RegisterPage = (props: IRegisterPageProps) => {
+    /** @Component_Internal_State */
+    const [componentState, setComponentState] = React.useState<IRegisterPageState>(initialRegisterPageState)
 
-const RegisterPage = (props: Props) => {
-    const [openningDialogConfirm, setOpenningDialogConfirm] = React.useState(false)
-    const [isFormEmpty, setIsFormEmpty] = useState(true)
+    /** @During_Render */
     const { openningDialogLogin, onCloseDialogInLoginPage } = props
     const dispatch = useDispatch()
-
     const { lastFocus, draftUser, saveRegisterUser } = useSelector((state: RootStateType) => state.registerPageReducer)
-
     const {
         register,
         setFocus,
@@ -51,7 +63,7 @@ const RegisterPage = (props: Props) => {
         reset,
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isSubmitted, submitCount, isValid, isValidating }
-    } = useForm({
+    } = useForm<FieldValues>({
         mode: 'onSubmit',
         reValidateMode: 'onChange',
         criteriaMode: 'firstError',
@@ -61,12 +73,36 @@ const RegisterPage = (props: Props) => {
         delayError: undefined,
         defaultValues: draftUser
     })
+    const focusStatic = useStaticFocus({ focusOrderIds: [...Object.values(FormElement)] })
+
+    /** @After_Render */
+    useEffect(() => {
+        setFocus(lastFocus)
+    }, [])
+
+    useEffect(() => {
+        if (saveRegisterUser) {
+            onResetRegisterUser()
+        }
+    }, [saveRegisterUser])
+
+    useEffect(() => {
+        if (draftUser) handleStatePageChange('isFormEmpty', false)
+    }, [draftUser])
+
+    /** @Component_Events */
+
+    const handleStatePageChange = (key: keyof IRegisterPageState, value: IRegisterPageState[keyof IRegisterPageState]) => {
+        const newComponentState = produce(componentState, (draft) => {
+            draft[key] = value
+        })
+
+        setComponentState(newComponentState)
+    }
 
     const activeID = () => {
         return document.activeElement?.id
     }
-
-    const focusStatic = useStaticFocus({ focusOrderIds: [...Object.values(FormElement)] })
 
     const onClose = () => {
         if (openningDialogLogin && onCloseDialogInLoginPage) {
@@ -80,7 +116,7 @@ const RegisterPage = (props: Props) => {
         const value = getValues()
         const isEmpty = !Object.values(value).some((item) => item !== '')
 
-        setIsFormEmpty(isEmpty)
+        handleStatePageChange('isFormEmpty', isEmpty)
     }
 
     const handleRegisterUser = (data: IRegisterUser) => {
@@ -89,7 +125,7 @@ const RegisterPage = (props: Props) => {
 
     const onFocusElement = (id: string | null) => {
         focusStatic?.setActive(id)
-        if (isFormEmpty) return
+        if (componentState.isFormEmpty) return
         dispatch(updateSingleFieldRegisterPage({ fieldName: 'lastFocus', fieldValue: activeID() }))
     }
 
@@ -117,32 +153,19 @@ const RegisterPage = (props: Props) => {
             onClose()
             return
         }
-        setOpenningDialogConfirm(true)
+        handleStatePageChange('openningDialogConfirm', true)
     }
-
-    useEffect(() => {
-        setFocus(lastFocus)
-    }, [])
-
-    useEffect(() => {
-        if (saveRegisterUser) {
-            onResetRegisterUser()
-        }
-    }, [saveRegisterUser])
-
-    useEffect(() => {
-        if (draftUser) setIsFormEmpty(false)
-    }, [draftUser])
 
     return (
         <MaskLayoutStyled zIndex="3" padding="70px 550px">
             <ContentLayout
+                id="register-page"
                 title="register"
                 onClose={onClose}
                 onKeyDown={focusStatic?.forceMoveByKeyDown}
                 onFocus={() => focusStatic.setActive(FormElement.close)}
             >
-                {openningDialogConfirm && <Dialog message="Clear the save draft" onConfirmDialog={onConfirmDialog} onCancelDialog={onClose} />}
+                {componentState.openningDialogConfirm && <Dialog message="Clear the save draft" onConfirmDialog={onConfirmDialog} onCancelDialog={onClose} />}
                 <Input
                     label="username"
                     register={register}
@@ -213,11 +236,13 @@ const RegisterPage = (props: Props) => {
                         color="#c65912"
                         backgroundColor="#f8cbad"
                         border="1px solid #c65912"
-                        disabled={isFormEmpty}
+                        disabled={componentState.isFormEmpty}
                         onClick={onSaveDraftUser}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
+                            if (e.key === KeyBoard.Enter) {
                                 onSaveDraftUser()
+                                e.preventDefault()
+                                return
                             }
                             focusStatic?.forceMoveByKeyDown(e)
                         }}
@@ -231,8 +256,10 @@ const RegisterPage = (props: Props) => {
                         border="none"
                         onClick={onResetRegisterUser}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
+                            if (e.key === KeyBoard.Enter) {
                                 onResetRegisterUser()
+                                e.preventDefault()
+                                return
                             }
                             focusStatic?.forceMoveByKeyDown(e)
                         }}
@@ -246,8 +273,10 @@ const RegisterPage = (props: Props) => {
                         border="none"
                         onClick={handleSubmit(handleRegisterUser)}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
+                            if (e.key === KeyBoard.Enter) {
                                 handleSubmit(handleRegisterUser)
+                                e.preventDefault()
+                                return
                             }
                             focusStatic?.forceMoveByKeyDown(e)
                         }}
@@ -261,8 +290,10 @@ const RegisterPage = (props: Props) => {
                         border="2px solid #c65912"
                         onClick={handleClose}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
+                            if (e.key === KeyBoard.Enter) {
                                 handleClose()
+                                e.preventDefault()
+                                return
                             }
                             focusStatic?.forceMoveByKeyDown(e)
                         }}

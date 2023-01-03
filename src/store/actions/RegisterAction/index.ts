@@ -1,4 +1,4 @@
-import { IRegisterUser } from '../../../types/registerPage'
+import { IRegisterUser } from '../../../types/user'
 import { ON_REGISTER_SAVE_USER_ACTION, ON_REGISTER_SHOW_DIALOG_ACTION } from '../constant'
 
 export const onRegisterShowDialogAction = () => {

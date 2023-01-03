@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-import { IRegisterUser } from '../../../types/registerPage'
+import { IRegisterUser } from '../../../types/user'
 
 export type InitialStateType = {
     lastFocus?: 'username' | 'email' | 'password' | 'phone' | 'address'
