@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { IProps } from '.'
 
 export const ContainerLayoutStyled = styled.div`
     width: 100vw;
@@ -13,13 +14,13 @@ export const ContainerLayoutStyled = styled.div`
     position: relative;
     z-index: 0;
 `
-export const MaskLayoutStyled = styled.div`
+export const MaskLayoutStyled = styled.div<{ padding?: string; zIndex?: string }>`
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.5);
     position: absolute;
-    padding: ${(props) => props.padding};
-    z-index: ${(props) => props.zIndex || '0'};
+    padding: ${(props: any) => props.padding};
+    z-index: ${(props: any) => props.zIndex || '0'};
 `
 export const ContentLayoutStyled = styled.div`
     width: 500px;

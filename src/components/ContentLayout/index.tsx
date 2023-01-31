@@ -3,16 +3,17 @@ import { KeyBoard } from '../../constant/KeyBoard'
 import Button from '../Button'
 import { ContentLayoutStyled, ContentHeaderStyled, ContainerLayoutStyled, MaskLayoutStyled } from './style'
 
-type Props = {
+export type IProps = {
     id?: string
     title: string
     children?: any
+    padding?: string
     onClose?: () => void
     onKeyDown?: (e: React.KeyboardEvent<HTMLButtonElement | any>) => void
     onFocus?: () => void
 }
 
-const ContentLayout = (props: Props) => {
+const ContentLayout = (props: IProps) => {
     const { id, title, children, onClose, onKeyDown, onFocus } = props
     return (
         <ContentLayoutStyled id={id}>
