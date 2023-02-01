@@ -1,5 +1,6 @@
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
+import useAuth from '../hook/useAuth'
 
 const DateDisplay: React.FC = () => {
     const [date, setDate] = useState('')
@@ -14,9 +15,13 @@ const DateDisplay: React.FC = () => {
         return () => clearInterval(interval)
     }, [])
 
+    const userAuth = useAuth()
+
     return (
         <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-            <span style={{ color: 'orange' }}>{date}</span>
+            <span style={{ color: 'orange' }} onClick={() => userAuth.logOutUser()}>
+                {date}
+            </span>
         </div>
     )
 }
